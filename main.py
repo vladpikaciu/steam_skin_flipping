@@ -131,6 +131,7 @@ def scrape_page(min, max):
                 random_num = random.randint(15, 20)
                 # print('sleep ' + str(random_num))
                 sleep(random_num)
+            # Not tables
             except TimeoutException:
                 print('Not Sticker')
                 wait_till((By.CLASS_NAME, "market_listing_table_header"))
