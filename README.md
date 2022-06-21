@@ -1,2 +1,11 @@
 # steam_skin_flipping
-This python script was made using Selenium. It's main goal is to scrape data from the pages specified by the user. The script will get the price and quantity of Steam skins sales and see if it would be profitable for the user to flip. It will write the data to a .txt file. The script is relatively complex, made to work with any steam exception.
+This python script was made using Selenium. It's main goal is to scrape data from the pages specified by the user.
+
+
+Features: 
+- make exceptions for skins with a very low trade volume.
+- get the potential profit in a nice and colorful way in the console.
+- write all data to a .txt file.
+- specify the minimum desired profit percentage.
+- evade Steam error "Too many requests" by having a longer waiting interval between requests.
+- able to scrape any game skin data
