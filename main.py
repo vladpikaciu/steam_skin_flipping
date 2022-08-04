@@ -28,19 +28,6 @@ skin_stats = {
 order_quantity = 25
 # Create file
 
-chrome_options = Options()
-# #chrome_options.add_argument("--disable-extensions")
-chrome_options.add_argument("--disable-gpu")
-# #chrome_options.add_argument("--no-sandbox") # linux only
-# chrome_options.add_argument("--headless")
-chrome_options.add_argument("--user-data-dir=data")
-chrome_options.add_extension('csgo_trader_extension.crx')
-
-
-s=Service("/home/vladpikaciu/PycharmProjects/flipping/chromedriver")
-driver = webdriver.Chrome(service=s, options=chrome_options)
-
-# driver = webdriver.Chrome(service=s)
 
 def wait_till(element, seconds=10):
     WebDriverWait(driver, seconds).until(
@@ -57,22 +44,29 @@ def check_login():
         password = input("Please enter steam password: ")
         driver.find_element(by=By.ID, value="input_username").send_keys(username)
         driver.find_element(by=By.ID, value="input_password").send_keys(password)
-        driver.find_element(by=By.ID, value="remember_login").click()
-        driver.find_element(by=By.XPATH, value="/html/body/div[1]/div[7]/div[4]/div[1]/div/div[1]/div/div/div/div/div[3]/div[1]/button").click()
+        try:
+            driver.find_element(by=By.ID, value="remember_login").click()
+            driver.find_element(by=By.XPATH, value="/html/body/div[1]/div[7]/div[4]/div[1]/div/div[1]/div/div/div/div/div[3]/div[1]/button").click()
+            status = True
+        except:
+            driver.find_element(by=By.XPATH, value="/html/body/div[1]/div[7]/div[4]/div[1]/div/div[1]/div/div/div/div/div[3]/div[1]/button").click()
+            status = False
         try:
             driver.find_element(by=By.ID, value="twofactorcode_entry")
             steam_guard = input("Please enter Steam Guard Code: ")
             driver.find_element(by=By.ID, value="twofactorcode_entry").send_keys(steam_guard)
-            driver.find_element(by=By.XPATH, value="/html/body/div[3]/div[3]/div/div/div/form/div[4]/div[1]/div[1]").click()
-            driver.find_element(by=By.CLASS_NAME, value="actual_persona_name")
+            driver.find_element(by=By.CSS_SELECTOR, value="#login_twofactorauth_buttonset_entercode > div.auth_button.leftbtn").click()
+            print("click")
+            sleep(2)
+            driver.get("https://steamcommunity.com/market/")
+            sleep(2)
+            driver.find_element(by=By.CLASS_NAME, value="avatarIcon")
+            sleep(2)
         except:
             print("Incorect login details")
-
-    else:
-        print("Logged in")
-
+        return status
 # noinspection PyTypedDict
-def scrape_page(min, max):
+def scrape_page(min, max, orders, desired_profit):
     counter = 1
     for pages in range(min, max):
         total_skins  = str((max - min) * 10)
@@ -83,6 +77,11 @@ def scrape_page(min, max):
             steam_url = 'https://steamcommunity.com/market/search?appid=304930#p' + str(pages) + '_quantity_desc'
         driver.get(steam_url)
         check_login()
+        print(check_login())
+        status = check_login()
+        if status == False:
+            driver.get(steam_url)
+            check_login()
         driver.get(steam_url)
         sleep(1)
         # Scrape all skins links from steam search
@@ -181,15 +180,11 @@ def scrape_page(min, max):
                 except:
                     print('Page did not load correctly')
             finally:
-                print(skin_stats)
-                profit = str(round(((round(skin_stats['selling_price'] / 1.15, 2) / skin_stats[
-                    'buying_price']) - 1.02) * 100)) + '%'
-                a.write('\n' + str(round(skin_stats['selling_price'] / 1.15, 2)) + " | " + str(
-                    skin_stats['buying_price']) + ' | ' + profit + ' | ' + skin_stats['name'] + ' |  Page ' + str(
-                    pages))
+                profit = str(round(((round(skin_stats['selling_price'] / 1.15, 2) / skin_stats['buying_price']) - 1.02) * 100)) + '%'
+                a.write('\n' + str(round(skin_stats['selling_price'] / 1.15, 2)) + " | " + str(skin_stats['buying_price']) + ' | ' + profit + ' | ' + skin_stats['name'] + ' |  Page ' + str(pages))
                 # Check if it's profitable
-                if skin_stats['buy_quantity'] and skin_stats['sell_quantity'] >= order_quantity:
-                    if skin_stats['selling_price'] / 1.15 - skin_stats['buying_price'] > 0.1:
+                if skin_stats['buy_quantity'] and skin_stats['sell_quantity'] >= orders:
+                    if skin_stats['selling_price'] / 1.15 / skin_stats['buying_price'] > float(desired_profit):
                         profit = str(round(((round(skin_stats['selling_price'] / 1.15, 2) / skin_stats[
                             'buying_price']) - 1.02) * 100)) + '%'
                         print(colored(str(round(skin_stats['selling_price'] / 1.15, 2)) + ' | ' + str(
@@ -207,14 +202,28 @@ def scrape_page(min, max):
                 # print('sleep ' + str(random_num))
                 sleep(random_num)
 
+headless = input("Type 1 to show chrome: ")
+chrome_options = Options()
+if headless != "1":
+    chrome_options.add_argument("--headless")
+chrome_options.add_argument("--user-data-dir=C:/data")
+chrome_options.add_extension('csgo_trader_extension.crx')
+s=Service("chromedriver.exe")
+driver = webdriver.Chrome(service=s, options=chrome_options)
 
-game = int(input('1. CSGO \n 2.UNTURED (page 200)   '))
+
+print('Please select the game you want to scrape by typing the number 1 or 2')
+game = int(input('1.CSGO \n2.UNTURED  '))
+print('The program will order the skins by price, from the cheapest to the most expensive skin.')
 start_page = int(input("Enter on which page to start: "))
 end_page = int(input("Enter on which page to end: "))
+orders = int(input("Enter how many minimum orders should the item have: "))
+profit = float(input("Enter how much profit are you looking for (ex: 1.2): "))
 if game is not None:
+    current_time = now.strftime("%H:%M:%S")
     f.write('\n'+"Start Session     " + current_time + '\n')
-    scrape_page(start_page, end_page)
+    scrape_page(start_page, end_page, orders, profit)
     f.write('\n')
+    current_time = now.strftime("%H:%M:%S")
     f.write("End Session     " + current_time + '\n')
-    driver.close()
-driver.quit()
+    driver.quit()
