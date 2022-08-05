@@ -190,7 +190,7 @@ def scrape_page(min, max, orders, desired_profit):
                         print(colored(str(round(skin_stats['selling_price'] / 1.15, 2)) + ' | ' + str(
                             skin_stats['buying_price']) + '  | ' + profit, 'magenta'))
                         print(skin_stats['name'])
-                        f.write('\n' + str(round(skin_stats['selling_price'] / 1.15, 2)) + str(skin_stats['buying_price']) + ' | ' + profit + ' | ' + skin_stats['name'] + ' |  Page ' + str(pages))
+                        f.write('\n' + str(round(skin_stats['selling_price'] / 1.15, 2)) + " | " + str(skin_stats['buying_price']) + ' | ' + profit + ' | ' + skin_stats['name'] + ' |  Page ' + str(pages))
                 print(colored(str(counter) + ' / ' + total_skins, 'yellow'))
                 print(colored('OK', 'green'))
                 counter += 1
