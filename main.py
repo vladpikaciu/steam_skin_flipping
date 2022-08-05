@@ -208,7 +208,7 @@ if headless != "1":
     chrome_options.add_argument("--headless")
 chrome_options.add_argument("--user-data-dir=C:/data")
 chrome_options.add_extension('csgo_trader_extension.crx')
-s=Service("chromedriver.exe")
+s=Service("../skinport/chromedriver.exe")
 driver = webdriver.Chrome(service=s, options=chrome_options)
 
 
