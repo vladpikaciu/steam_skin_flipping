@@ -9,3 +9,11 @@ Features:
 - specify the minimum desired profit percentage.
 - evade Steam error "Too many requests" by having a longer waiting interval between requests.
 - able to scrape any game skin data
+
+Instructions:
+1. Install Visual Studio Code
+2. Install Python extension
+3. Install latest chrome version
+4. Watch youtube video and repeat steps.
+
+https://www.youtube.com/watch?v=9H2rg4eTMQ0&ab_channel=vladpikaciu
