@@ -1,5 +1,5 @@
 # steam_skin_flipping
-## Not workign anymore
+## Not working anymore. Steam changed their login page layout.
 This python script was made using Selenium. It's main goal is to scrape data from the pages specified by the user.
 
 
