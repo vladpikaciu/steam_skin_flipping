@@ -50,10 +50,11 @@ def check_login():
         driver.find_element(By.CSS_SELECTOR, ".newlogindialog_TextField_2KXGK:nth-child(2) > .newlogindialog_TextInput_2eKVn").send_keys(password)
         try:
             driver.find_element(By.CSS_SELECTOR, ".newlogindialog_SubmitButton_2QgFE").click()
-            if driver.find_element(By.CSS_SELECTOR, "input:nth-child(1)").is_displayed():
+            try:
+                wait_till((By.CSS_SELECTOR, "input:nth-child(1)"), 5)
                 steam_guard = input("Please enter Steam Guard Code: ")
                 driver.find_element(By.CSS_SELECTOR, "input:nth-child(1)").send_keys(steam_guard)
-            else:
+            except:
                 print("Couldn't find Steam Guard input. Continuing")
             print("Logging IN....")
             try:
