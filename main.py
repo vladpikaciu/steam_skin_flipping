@@ -24,10 +24,10 @@ with open ("Data.csv", "r") as data_file:
 
 skin_stats = {
     'name': '',
-    'selling_price': '',
-    'buying_price': '',
-    'sell_quantity': '',
-    'buy_quantity': '',
+    'selling_price': 0,
+    'buying_price': 0,
+    'sell_quantity': 0,
+    'buy_quantity': 0,
 }
 order_quantity = 25
 
@@ -88,7 +88,7 @@ def scrape_page(min, max, orders, desired_profit):
         driver.get(steam_url)
         sleep(1)
         # Scrape all skins links from steam search
-        for item in range(0,10):
+        for item in range(0, 10):
             # Check if search results are visible
             try:
                 wait_till((By.ID, "resultlink_1"))
@@ -145,7 +145,10 @@ def scrape_page(min, max, orders, desired_profit):
                     clean_body = buy_body.split(' ')
                     buy_quantity = clean_body[0]
                     buy_price = clean_body[5]
-                    skin_stats['buying_price'] = float(buy_price.strip('$'))
+                    try:
+                        skin_stats['buying_price'] = float(buy_price.strip('$'))
+                    except:
+                        print(buy_price.strip('$'))
                     skin_stats['buy_quantity'] = int(buy_quantity)
                 else:
                     print("No active buy listings")
